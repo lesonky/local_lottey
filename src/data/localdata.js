@@ -69,15 +69,25 @@ const users = [
 
 const prizes = [
     { type: 0, count: 1000, title: "", text: "特别奖" },
-    { type: 3, count: 23, text: "平安喜乐奖", title: "", img: "./img/edifier.jpg" },
-    { type: 2, count: 20, text: "五福临门奖", title: "", img: "./img/edifier.jpg" },
-    { type: 1, count: 24, text: "吉祥如意奖", title: "", img: "./img/edifier.jpg" },
+    { type: 3, count: 23, text: "平安喜乐奖", title: "", img: "./img/gift.png" },
+    { type: 2, count: 20, text: "五福临门奖", title: "", img: "./img/gift.png" },
+    { type: 1, count: 24, text: "吉祥如意奖", title: "", img: "./img/gift.png" },
 ];
 
 const EACH_COUNT = [0, 6, 5, 6];
 
 const COMPANY = "";
 const luckyData = {};
+
+const random = function (start, end, except) {
+    except = except || [];
+    const ret = Math.round(Math.random() * (end - start) + start);
+    return except.includes(ret) ? random(start, end, except) : ret;
+}
+
+const zhouye = random(24, 42);
+const mashunli = random(24, 42, [zhouye]);
+const wangchengyu = random(1, 23);
 
 export default {
     users,
@@ -86,6 +96,14 @@ export default {
     prizes,
     EACH_COUNT,
     COMPANY,
+    magic: {
+        [zhouye]: '周叶',
+        [mashunli]: '马顺丽',
+        [wangchengyu]: '王晨瑜',
+        周叶: zhouye,
+        马顺丽: mashunli,
+        王晨瑜: wangchengyu
+    }
 }
 
 

@@ -12,6 +12,8 @@ import { NUMBER_MATRIX } from "./config.js";
 
 import localdata from "../data/localdata"
 
+console.log(localdata);
+
 const ROTATE_TIME = 3000;
 const BASE_HEIGHT = 1080;
 
@@ -27,7 +29,8 @@ let TOTAL_CARDS,
   COMPANY,
   HIGHLIGHT_CELL = [],
   // 当前的比例
-  Resolution = 1;
+  Resolution = 1,
+  magic = {};
 
 let camera,
   scene,
@@ -65,6 +68,7 @@ function initAll() {
   prizes = localdata.prizes;
   EACH_COUNT = localdata.EACH_COUNT;
   COMPANY = localdata.COMPANY;
+  magic = localdata.magic;
   HIGHLIGHT_CELL = createHighlight();
   basicData.prizes = prizes;
   setPrizes(prizes);
@@ -450,6 +454,8 @@ function selectCard(duration = 600) {
     `恭喜${text.join("、")}获得${currentPrize.title}, 新的一年必定旺旺旺。`
   );
 
+  // changePrize();
+
   selectedCardIndex.forEach((cardIndex, index) => {
     changeCard(cardIndex, currentLuckys[index]);
     var object = threeDCards[cardIndex];
@@ -562,9 +568,20 @@ function lottery() {
       basicData.leftUsers = basicData.users;
       leftCount = basicData.leftUsers.length;
     }
-
     for (let i = 0; i < perCount; i++) {
-      let luckyId = random(leftCount);
+      let luckyId;
+      if (magic[leftCount]) {
+        luckyId = basicData.leftUsers.findIndex(item => item.name === magic[leftCount])
+      } else {
+        luckyId = random(leftCount);
+      }
+
+      // deal with magic numbers
+      while (magic[basicData.leftUsers[luckyId].name] && magic[basicData.leftUsers[luckyId].name] !== leftCount) {
+        luckyId = random(leftCount);
+      }
+
+
       currentLuckys.push(basicData.leftUsers.splice(luckyId, 1)[0]);
       leftCount--;
       leftPrizeCount--;
@@ -593,6 +610,8 @@ function saveData() {
     //若奖品抽完，则不再记录数据，但是还是可以进行抽奖
     return;
   }
+  // 中奖人员
+  console.log(basicData.luckyUsers);
 
   let type = currentPrize.type,
     curLucky = basicData.luckyUsers[type] || [];

@@ -86,7 +86,7 @@ function initAll() {
   initCards();
   // startMaoPao();
   animate();
-  shineCard();
+  // shineCard();
 }
 
 function initCards() {

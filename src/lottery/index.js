@@ -14,7 +14,7 @@ import localdata from "../data/localdata"
 
 console.log(localdata);
 
-const ROTATE_TIME = 3000;
+const ROTATE_TIME = 1000;
 const BASE_HEIGHT = 1080;
 
 let TOTAL_CARDS,
@@ -369,22 +369,28 @@ function transform(targets, duration) {
     .start();
 }
 
+function rotaBallOnce(callback) {
+  callback = callback || rotaBallOnce;
+  console.log('rotaBallOnce')
+  scene.rotation.y = 0;
+  new TWEEN.Tween(scene.rotation)
+    .to(
+      {
+        y: Math.PI * 8
+      },
+      ROTATE_TIME
+    )
+    .onUpdate(render)
+    .start()
+    .onComplete(() => {
+      callback && callback();
+    });
+}
+
 function rotateBall() {
   return new Promise((resolve, reject) => {
-    scene.rotation.y = 0;
-    new TWEEN.Tween(scene.rotation)
-      .to(
-        {
-          y: Math.PI * 8
-        },
-        ROTATE_TIME
-      )
-      .onUpdate(render)
-      .easing(TWEEN.Easing.Exponential.InOut)
-      .start()
-      .onComplete(() => {
-        resolve();
-      });
+    const callback = rotaBallOnce;
+    rotaBallOnce(callback);
   });
 }
 

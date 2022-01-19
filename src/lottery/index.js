@@ -1,6 +1,6 @@
 import "./index.css";
 import "../css/animate.min.css";
-import "./canvas.js";
+// import "./canvas.js";
 import {
   addQipao,
   setPrizes,

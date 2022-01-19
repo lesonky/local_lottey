@@ -14,7 +14,7 @@ import localdata from "../data/localdata"
 
 console.log(localdata);
 
-const ROTATE_TIME = 1000;
+const ROTATE_TIME = 500;
 const BASE_HEIGHT = 1080;
 
 let TOTAL_CARDS,
@@ -49,6 +49,9 @@ let selectedCardIndex = [],
     users: [], //所有人员
     luckyUsers: {}, //已中奖人员
     leftUsers: [] //未中奖人员
+  },
+  __callback = {
+    current: null
   },
   interval,
   // 当前抽的奖项，从最低奖开始抽，直到抽到大奖
@@ -186,16 +189,33 @@ function setLotteryStatus(status = false) {
  * 事件绑定
  */
 function bindEvent() {
+
+  document.onkeyup = function (e) {
+    // 兼容FF和IE和Opera
+    var event = e || window.event;
+    var key = event.which || event.keyCode || event.charCode;
+    if (key == 13) {
+      let div = document.getElementById("lottery");
+      div.click();
+    }
+  };
+
   document.querySelector("#menu").addEventListener("click", function (e) {
     e.stopPropagation();
+    let target = e.target;
+    let id = target.id;
     // 如果正在抽奖，则禁止一切操作
     if (isLotting) {
       addQipao("抽慢一点点～～");
+      __callback.current = () => {
+        __callback.resolve();
+        __callback.current = null;
+        target.innerHTML = "抽奖"
+      }
       return false;
     }
 
-    let target = e.target.id;
-    switch (target) {
+    switch (id) {
       // 显示数字墙
       case "welcome":
         switchScreen("enter");
@@ -221,6 +241,7 @@ function bindEvent() {
         resetCard().then(res => {
           // 抽奖
           lottery();
+          target.innerHTML = "停止"
         });
         if (currentPrize.title) {
           addQipao(`正在抽取[${currentPrize.title}],调整好姿势`);
@@ -370,7 +391,7 @@ function transform(targets, duration) {
 }
 
 function rotaBallOnce(callback) {
-  callback = callback || rotaBallOnce;
+  callback = __callback.current || rotaBallOnce;
   console.log('rotaBallOnce')
   scene.rotation.y = 0;
   new TWEEN.Tween(scene.rotation)
@@ -390,6 +411,7 @@ function rotaBallOnce(callback) {
 function rotateBall() {
   return new Promise((resolve, reject) => {
     const callback = rotaBallOnce;
+    __callback.resolve = resolve;
     rotaBallOnce(callback);
   });
 }
